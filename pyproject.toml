@@ -14,9 +14,6 @@ aiohttp = "^3.8.3"
 black = "^22.10.0"
 isort = "^5.10.1"
 
-[tool.poetry.extras]
-docs = ["Sphinx", "sphinxcontrib-trio", "myst-parser"]
-
 [tool.isort]
 profile = "black"
 
