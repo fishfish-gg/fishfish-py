@@ -1,9 +1,15 @@
 [tool.poetry]
-name = "fishfish"
+name = "fishfish-gg"
 version = "0.1.0"
 description = "FishFish API library for Python"
+keywords = ["api", "fishfish", "phishing", "discord"]
 authors = ["fishfish-gg <admin@fishfish.gg>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://fishfish.gg"
+repository = "https://github.com/fishfish-gg/fishfish-py"
+documentation = "https://fishfish-py.rtfd.io"
+packages = [{include = "fishfish"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
