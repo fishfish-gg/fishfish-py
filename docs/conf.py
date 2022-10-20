@@ -33,7 +33,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinxcontrib_trio",
-    "myst_parser",
 ]
 
 templates_path = ['_templates']
