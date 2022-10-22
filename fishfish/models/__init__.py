@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from .domain import Domain, CreateDomainRequest, UpdateDomainRequest
-from .token import Token, CreateTokenRequest
+
+from .domain import CreateDomainRequest, Domain, UpdateDomainRequest
+from .token import CreateTokenRequest, Token
 from .url import URL, CreateURLRequest, UpdateURLRequest
 
 

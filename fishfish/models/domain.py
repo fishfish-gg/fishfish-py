@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 import typing
+from dataclasses import dataclass
+
 from fishfish.enums import Category
 
 
@@ -25,6 +26,3 @@ class UpdateDomainRequest:
     description: typing.Optional[str]
     category: typing.Optional[Category]
     target: typing.Optional[str]
-
-
-

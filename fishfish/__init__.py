@@ -14,9 +14,16 @@ __version__ = "0.1.0"
 
 
 from .enums import Category, Permission
-from .models import CreateDomainRequest, UpdateDomainRequest, Domain
-from .models import Token, CreateTokenRequest
-from .models import URL, CreateURLRequest, UpdateURLRequest
-
+from .models import (
+    URL,
+    APIStatus,
+    CreateDomainRequest,
+    CreateTokenRequest,
+    CreateURLRequest,
+    Domain,
+    Token,
+    UpdateDomainRequest,
+    UpdateURLRequest,
+)
 
 print("FISHFISH: THIS LIBRARY HAS NOT YET BEEN RELEASED")

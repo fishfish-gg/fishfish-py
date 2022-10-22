@@ -1,6 +1,7 @@
-from dataclasses import dataclass
-from fishfish import Category
 import typing
+from dataclasses import dataclass
+
+from fishfish import Category
 
 
 @dataclass
