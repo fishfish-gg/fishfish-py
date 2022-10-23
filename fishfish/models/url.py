@@ -12,17 +12,3 @@ class URL:
     target: str
     added: int
     checked: int
-
-
-@dataclass
-class CreateURLRequest:
-    description: str
-    category: Category
-    target: typing.Optional[str]
-
-
-@dataclass
-class UpdateURLRequest:
-    description: str
-    category: Category
-    target: typing.Optional[str]
