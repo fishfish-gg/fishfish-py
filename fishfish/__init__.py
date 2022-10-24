@@ -12,4 +12,8 @@ __license__ = "MIT"
 __copyright__ = "Copyright 2022 fishfish.gg"
 __version__ = "0.1.0"
 
+
+from .enums import Category, Permission
+from .models import URL, APIStatus, Domain, Token
+
 print("FISHFISH: THIS LIBRARY HAS NOT YET BEEN RELEASED")
