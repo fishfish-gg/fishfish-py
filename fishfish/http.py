@@ -14,7 +14,7 @@ from fishfish import (
 from fishfish.jwt import JWT
 
 
-class Client:
+class Http:
     def __init__(self, *, token: str):
         self.__refresh_token: str = token
         self.__current_session_token: Optional[JWT] = None
