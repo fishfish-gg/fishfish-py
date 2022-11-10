@@ -17,7 +17,28 @@ from fishfish.jwt import JWT
 
 # TODO Client side checks for authenticated routes
 class Http:
+    """
+    All public methods can raise the following:
+
+    FishFishException
+        ...
+    Unauthorized
+        ...
+    Forbidden
+        ...
+    ServerError
+        ...
+    """
+
     def __init__(self, *, token: str):
+        """
+
+        Parameters
+        ----------
+        token : str
+            Your FishFish session token.
+            This is generated via the FishFish bot
+        """
         self.__refresh_token: str = token
         self.__current_session_token: Optional[JWT] = None
         self.__session: httpx.Client = httpx.Client(
@@ -86,7 +107,24 @@ class Http:
         category: Category,
         target: Optional[str] = None,
     ) -> Domain:
-        """Insert a new domain into the database."""
+        """Insert a new domain into the database.
+
+        Parameters
+        ----------
+        domain : str
+            The domain you wish to create.
+        description : str
+            A description of the domain
+        category : Category
+            The category this domain fits into
+        target : Optional[str]
+            The target of this domain
+
+        Returns
+        -------
+        Domain
+            The newly created domain
+        """
         body = {"category": category.value, "description": description}
         if target:
             body["target"] = target
@@ -106,7 +144,29 @@ class Http:
         description: Optional[str] = None,
         category: Optional[Category] = None,
     ) -> Domain:
-        """Update a domain in the database."""
+        """Update a domain in the database.
+
+        Parameters
+        ----------
+        domain : str
+            The domain to update
+        target : Optional[str]
+            The target for the domain
+        description : Optional[str]
+            The description for the domain
+        category : Optional[str]
+            The category for the domain
+
+        Returns
+        -------
+        Domain
+            The updated domain
+
+        Raises
+        ------
+        ValueError
+            You failed to pass any arguments to modify.
+        """
         body = {}
         if target:
             body["target"] = target
@@ -117,6 +177,9 @@ class Http:
         if category:
             body["category"] = category.value
 
+        if not body:
+            raise ValueError("Expected at least one value to modify.")
+
         r = self._request(
             "PATCH",
             f"/domains/{domain}",
@@ -125,7 +188,13 @@ class Http:
         return Domain.from_dict(r.json())
 
     def delete_domain(self, domain: str) -> None:
-        """Delete a domain from the database."""
+        """Delete a domain from the database.
+
+        Parameters
+        ----------
+        domain : str
+            The domain you wish to delete
+        """
         self._request("DELETE", f"/domains/{domain}")
 
     def get_domain(self, domain: str) -> Domain:
@@ -140,15 +209,6 @@ class Http:
         -------
         Domain
             The domain object
-
-        Raises
-        ------
-        Unauthorized
-            ...
-        Forbidden
-            ...
-        ServerError
-            ...
         """
         r = self._request("GET", f"/domains/{domain}")
         return Domain.from_dict(r.json())
@@ -181,7 +241,24 @@ class Http:
         full: bool = False,
         category: Optional[Category] = None,
     ):
-        """Get all domains from the database."""
+        """Get all domains from the database.
+
+        Parameters
+        ----------
+        full : bool
+            Whether or not to return full domain objects.
+            This parameter requires auth.
+        category : Optional[Category]
+            The category of domains to return.
+            This defaults to phishing & malware if full=false
+
+        Returns
+        -------
+        List[str]
+            A list of the domain names if full is False
+        List[Domain]
+            A list of domain objects if full is True
+        """
         prepended_category = f"category={category.value}&" if category else ""
         r = self._request(
             "GET", f"/domains?{prepended_category}full={str(full).lower()}"
@@ -197,7 +274,24 @@ class Http:
         category: Category,
         target: Optional[str] = None,
     ) -> URL:
-        """Create a new URL in the database."""
+        """Insert a new URL in the database.
+
+        Parameters
+        ----------
+        url : str
+            The url you wish to create.
+        description : str
+            A description of the url
+        category : Category
+            The category this url fits into
+        target : Optional[str]
+            The target of this url
+
+        Returns
+        -------
+        URL
+            The newly created url
+        """
         body = {"category": category.value, "description": description}
         if target:
             body["target"] = target
@@ -217,7 +311,29 @@ class Http:
         description: Optional[str] = None,
         category: Optional[Category] = None,
     ) -> URL:
-        """Update a URL in the database."""
+        """Update a URL in the database.
+
+        Parameters
+        ----------
+        url : str
+            The url to update
+        target : Optional[str]
+            The target for the url
+        description : Optional[str]
+            The description for the url
+        category : Optional[str]
+            The category for the url
+
+        Returns
+        -------
+        URL
+            The updated url
+
+        Raises
+        ------
+        ValueError
+            You failed to pass any arguments to modify.
+        """
         body = {}
         if target:
             body["target"] = target
@@ -228,6 +344,9 @@ class Http:
         if category:
             body["category"] = category.value
 
+        if not body:
+            raise ValueError("Expected at least one value to modify.")
+
         r = self._request(
             "PATCH",
             f"/urls/{url}",
@@ -236,11 +355,28 @@ class Http:
         return URL.from_dict(r.json())
 
     def delete_url(self, url: str) -> None:
-        """Delete a URL from the database."""
+        """Delete a URL from the database.
+
+        Parameters
+        ----------
+        url : str
+            The url you wish to delete
+        """
         self._request("DELETE", f"/urls/{url}")
 
     def get_url(self, url: str) -> URL:
-        """Get a single URL from the database."""
+        """Get a single URL from the database.
+
+        Parameters
+        ----------
+        url : str
+            The url you wish to fetch from the API
+
+        Returns
+        -------
+        URL
+            The url object
+        """
         r = self._request("GET", f"/urls/{url}")
         return URL.from_dict(r.json())
 
@@ -272,7 +408,24 @@ class Http:
         full: bool = False,
         category: Optional[Category] = None,
     ):
-        """Get all URL's from the database."""
+        """Get all urls from the database.
+
+        Parameters
+        ----------
+        full : bool
+            Whether or not to return full url objects.
+            This parameter requires auth.
+        category : Optional[Category]
+            The category of domains to return.
+            This defaults to phishing & malware if full=false
+
+        Returns
+        -------
+        List[str]
+            A list of the urls if full is False
+        List[Url]
+            A list of url objects if full is True
+        """
         prepended_category = f"category={category.value}&" if category else ""
         r = self._request("GET", f"/urls?{prepended_category}full={str(full).lower()}")
         data = r.json()
