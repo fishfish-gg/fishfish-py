@@ -1,4 +1,4 @@
-from typing import Optional, overload, List, Literal
+from typing import Optional, overload, List, Literal, Dict
 
 import httpx
 
@@ -10,10 +10,12 @@ from fishfish import (
     Unauthorized,
     Forbidden,
     ServerError,
+    FishFishException,
 )
 from fishfish.jwt import JWT
 
 
+# TODO Client side checks for authenticated routes
 class Http:
     def __init__(self, *, token: str):
         self.__refresh_token: str = token
@@ -49,9 +51,15 @@ class Http:
         self,
         method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"],
         url: str,
+        *,
+        json: Optional[Dict] = None,
     ) -> httpx.Response:
         self._ensure_token()
-        r = self.__session.request(method, url)
+        if json:
+            r = self.__session.request(method, url, json=json)
+        else:
+            r = self.__session.request(method, url)
+
         if r.status_code == 401:
             raise Unauthorized
 
@@ -65,17 +73,29 @@ class Http:
 
     def api_status(self) -> APIStatus:
         """Get the status of the API."""
+        raise FishFishException(
+            "This route is currently undocumented, and is therefore not yet implemented."
+        )
 
     def create_domain(
         self,
         domain: str,
         *,
+        description: str,
+        category: Category,
         target: Optional[str] = None,
-        description: Optional[str] = None,
-        category: Optional[Category] = None,
     ) -> Domain:
         """Insert a new domain into the database."""
-        ...
+        body = {"category": category.value, "description": description}
+        if target:
+            body["target"] = target
+
+        r = self._request(
+            "POST",
+            f"/domains/{domain}",
+            json=body,
+        )
+        return Domain.from_dict(r.json())
 
     def update_domain(
         self,
@@ -86,11 +106,26 @@ class Http:
         category: Optional[Category] = None,
     ) -> Domain:
         """Update a domain in the database."""
-        ...
+        body = {}
+        if target:
+            body["target"] = target
+
+        if description:
+            body["description"] = description
+
+        if category:
+            body["category"] = category.value
+
+        r = self._request(
+            "PATCH",
+            f"/domains/{domain}",
+            json=body,
+        )
+        return Domain.from_dict(r.json())
 
     def delete_domain(self, domain: str) -> None:
         """Delete a domain from the database."""
-        ...
+        self._request("DELETE", f"/domains/{domain}")
 
     def get_domain(self, domain: str) -> Domain:
         """Get a single domain from the database.

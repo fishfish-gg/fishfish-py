@@ -16,4 +16,4 @@ __version__ = "0.1.0"
 from .enums import Category, Permission
 from .models import URL, APIStatus, Domain, Token
 from .exceptions import FishFishException, Forbidden, Unauthorized, ServerError
-from .client import Client
+from .http import Http
