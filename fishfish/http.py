@@ -12,30 +12,26 @@ from fishfish import (
     ServerError,
     FishFishException,
 )
-from fishfish.exceptions import ObjectDoesntExist
+from fishfish.exceptions import ObjectDoesntExist, AuthenticatedRoute
 from fishfish.jwt import JWT
 
 
-# TODO Client side checks for authenticated routes
 class Http:
     """
     All public methods can raise the following:
 
-    FishFishException
-        ...
-    Unauthorized
-        ...
-    Forbidden
-        ...
-    ObjectDoesntExist
-        ...
-    ServerError
-        ...
+    :py:class:`FishFishException`
+    :py:class:`Unauthorized`
+    :py:class:`Forbidden`
+    :py:class:`ObjectDoesntExist`
+    :py:class:`ServerError`
+
+    If a route also requires authentication it may raise:
+    :py:class:`AuthenticatedRoute`
     """
 
     def __init__(self, *, token: Optional[str] = None):
         """
-
         Parameters
         ----------
         token : Optional[str]
@@ -53,6 +49,11 @@ class Http:
     def cleanup(self) -> None:
         """Cleans up the underlying resources."""
         self.__session.close()
+
+    @property
+    def _is_authenticated_instance(self) -> bool:
+        """Does this Http instance appear to have authorization?"""
+        return bool(self.__refresh_token)
 
     def _ensure_token(self):
         if (
@@ -133,6 +134,9 @@ class Http:
         Domain
             The newly created domain
         """
+        if not self._is_authenticated_instance:
+            raise AuthenticatedRoute
+
         body = {"category": category.value, "description": description}
         if target:
             body["target"] = target
@@ -175,6 +179,9 @@ class Http:
         ValueError
             You failed to pass any arguments to modify.
         """
+        if not self._is_authenticated_instance:
+            raise AuthenticatedRoute
+
         body = {}
         if target:
             body["target"] = target
@@ -203,6 +210,9 @@ class Http:
         domain : str
             The domain you wish to delete
         """
+        if not self._is_authenticated_instance:
+            raise AuthenticatedRoute
+
         self._request("DELETE", f"/domains/{domain}")
 
     def get_domain(self, domain: str) -> Domain:
@@ -267,6 +277,11 @@ class Http:
         List[Domain]
             A list of domain objects if full is True
         """
+        if full is True and not self._is_authenticated_instance:
+            raise AuthenticatedRoute(
+                "Requesting all domains with full=True requires authentication."
+            )
+
         prepended_category = f"category={category.value}&" if category else ""
         r = self._request(
             "GET", f"/domains?{prepended_category}full={str(full).lower()}"
@@ -300,6 +315,9 @@ class Http:
         URL
             The newly created url
         """
+        if not self._is_authenticated_instance:
+            raise AuthenticatedRoute
+
         body = {"category": category.value, "description": description}
         if target:
             body["target"] = target
@@ -342,6 +360,9 @@ class Http:
         ValueError
             You failed to pass any arguments to modify.
         """
+        if not self._is_authenticated_instance:
+            raise AuthenticatedRoute
+
         body = {}
         if target:
             body["target"] = target
@@ -370,6 +391,9 @@ class Http:
         url : str
             The url you wish to delete
         """
+        if not self._is_authenticated_instance:
+            raise AuthenticatedRoute
+
         self._request("DELETE", f"/urls/{url}")
 
     def get_url(self, url: str) -> URL:
@@ -434,6 +458,11 @@ class Http:
         List[Url]
             A list of url objects if full is True
         """
+        if full is True and not self._is_authenticated_instance:
+            raise AuthenticatedRoute(
+                "Requesting all urls with full=True requires authentication."
+            )
+
         prepended_category = f"category={category.value}&" if category else ""
         r = self._request("GET", f"/urls?{prepended_category}full={str(full).lower()}")
         data = r.json()

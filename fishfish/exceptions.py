@@ -19,6 +19,10 @@ class Forbidden(FishFishException):
     """You do not have permissions to execute this action."""
 
 
+class AuthenticatedRoute(Unauthorized):
+    """This route requires authorization to use."""
+
+
 class ObjectDoesntExist(FishFishException):
     """The requested object does not exist."""
 
