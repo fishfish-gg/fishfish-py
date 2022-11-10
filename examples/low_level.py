@@ -5,9 +5,10 @@ from fishfish import Http, Domain, Category, URL
 
 
 def main():
-    http: Http = Http(token=os.environ["API_KEY"])
+    # http: Http = Http(token=os.environ["API_KEY"])
+    http: Http = Http()
 
-    domain: Domain = http.get_domain("steamncommunty.ru")
+    domain: Domain = http.get_domain("steaemcommunnity.com")
     print(domain)
 
     domains: List[Domain] = http.get_all_domains(category=Category.SAFE, full=True)

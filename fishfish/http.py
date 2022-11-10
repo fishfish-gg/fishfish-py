@@ -12,6 +12,7 @@ from fishfish import (
     ServerError,
     FishFishException,
 )
+from fishfish.exceptions import ObjectDoesntExist
 from fishfish.jwt import JWT
 
 
@@ -26,20 +27,22 @@ class Http:
         ...
     Forbidden
         ...
+    ObjectDoesntExist
+        ...
     ServerError
         ...
     """
 
-    def __init__(self, *, token: str):
+    def __init__(self, *, token: Optional[str] = None):
         """
 
         Parameters
         ----------
-        token : str
-            Your FishFish session token.
+        token : Optional[str]
+            Your FishFish session token to use in authenticated requests.
             This is generated via the FishFish bot
         """
-        self.__refresh_token: str = token
+        self.__refresh_token: Optional[str] = token
         self.__current_session_token: Optional[JWT] = None
         self.__session: httpx.Client = httpx.Client(
             base_url="https://api.fishfish.gg/v1"
@@ -55,13 +58,16 @@ class Http:
         if (
             self.__current_session_token
             and not self.__current_session_token.has_expired
-        ):
+        ) or not self.__refresh_token:
             return
 
         r = self.__session.post(
             "/users/@me/tokens",
             headers={"Authorization": self.__refresh_token},
         )
+        if r.status_code == 401:
+            raise Unauthorized("Your provided FishFish token is invalid.")
+
         data = r.json()
         self.__current_session_token = JWT(data["token"], data["expires"])
         self.__session.headers = httpx.Headers(
@@ -81,12 +87,14 @@ class Http:
         else:
             r = self.__session.request(method, url)
 
-        # TODO Provide more information within exceptions
         if r.status_code == 401:
             raise Unauthorized
 
         elif r.status_code == 403:
             raise Forbidden
+
+        elif r.status_code == 404:
+            raise ObjectDoesntExist
 
         elif r.status_code >= 500:
             raise ServerError
