@@ -1,7 +1,7 @@
 import os
 from typing import List
 
-from fishfish import Http, Domain, Category
+from fishfish import Http, Domain, Category, URL
 
 
 def main():
@@ -13,6 +13,9 @@ def main():
     domains: List[Domain] = http.get_all_domains(category=Category.SAFE, full=True)
     print(f"{len(domains)=}")
     print(domains[0])
+
+    urls: List[URL] = http.get_all_urls(full=True)
+    print(f"{len(urls)=}")
 
 
 if __name__ == "__main__":

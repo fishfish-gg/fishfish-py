@@ -60,6 +60,7 @@ class Http:
         else:
             r = self.__session.request(method, url)
 
+        # TODO Provide more information within exceptions
         if r.status_code == 401:
             raise Unauthorized
 
@@ -192,12 +193,21 @@ class Http:
         self,
         url: str,
         *,
+        description: str,
+        category: Category,
         target: Optional[str] = None,
-        description: Optional[str] = None,
-        category: Optional[Category] = None,
     ) -> URL:
         """Create a new URL in the database."""
-        ...
+        body = {"category": category.value, "description": description}
+        if target:
+            body["target"] = target
+
+        r = self._request(
+            "POST",
+            f"/urls/{url}",
+            json=body,
+        )
+        return URL.from_dict(r.json())
 
     def update_url(
         self,
@@ -208,15 +218,31 @@ class Http:
         category: Optional[Category] = None,
     ) -> URL:
         """Update a URL in the database."""
-        ...
+        body = {}
+        if target:
+            body["target"] = target
+
+        if description:
+            body["description"] = description
+
+        if category:
+            body["category"] = category.value
+
+        r = self._request(
+            "PATCH",
+            f"/urls/{url}",
+            json=body,
+        )
+        return URL.from_dict(r.json())
 
     def delete_url(self, url: str) -> None:
         """Delete a URL from the database."""
-        ...
+        self._request("DELETE", f"/urls/{url}")
 
     def get_url(self, url: str) -> URL:
         """Get a single URL from the database."""
-        ...
+        r = self._request("GET", f"/urls/{url}")
+        return URL.from_dict(r.json())
 
     @overload
     def get_all_urls(self) -> List[str]:
@@ -247,4 +273,7 @@ class Http:
         category: Optional[Category] = None,
     ):
         """Get all URL's from the database."""
-        ...
+        prepended_category = f"category={category.value}&" if category else ""
+        r = self._request("GET", f"/urls?{prepended_category}full={str(full).lower()}")
+        data = r.json()
+        return [URL.from_dict(d) for d in data] if full else data
