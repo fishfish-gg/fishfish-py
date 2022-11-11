@@ -16,7 +16,7 @@ from fishfish.exceptions import ObjectDoesntExist, AuthenticatedRoute
 from fishfish.jwt import JWT
 
 
-class Http:
+class FishHTTPClient:
     """
     All public methods can raise the following:
 
@@ -232,11 +232,11 @@ class Http:
         return Domain.from_dict(r.json())
 
     @overload
-    def get_all_domains(self) -> List[str]:
+    def get_domains(self) -> List[str]:
         ...
 
     @overload
-    def get_all_domains(
+    def get_domains(
         self,
         *,
         full: bool = True,
@@ -245,7 +245,7 @@ class Http:
         ...
 
     @overload
-    def get_all_domains(
+    def get_domains(
         self,
         *,
         full: bool = False,
@@ -253,7 +253,7 @@ class Http:
     ) -> List[str]:
         ...
 
-    def get_all_domains(
+    def get_domains(
         self,
         *,
         full: bool = False,
@@ -413,11 +413,11 @@ class Http:
         return URL.from_dict(r.json())
 
     @overload
-    def get_all_urls(self) -> List[str]:
+    def get_urls(self) -> List[str]:
         ...
 
     @overload
-    def get_all_urls(
+    def get_urls(
         self,
         *,
         full: bool = True,
@@ -426,7 +426,7 @@ class Http:
         ...
 
     @overload
-    def get_all_urls(
+    def get_urls(
         self,
         *,
         full: bool = False,
@@ -434,7 +434,7 @@ class Http:
     ) -> List[str]:
         ...
 
-    def get_all_urls(
+    def get_urls(
         self,
         *,
         full: bool = False,

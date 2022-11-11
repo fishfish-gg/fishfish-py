@@ -10,11 +10,7 @@ class Category(Enum):
 
     @classmethod
     def from_str(cls, string: str) -> Category:
-        return {
-            "SAFE": cls.SAFE,
-            "PHISHING": cls.PHISHING,
-            "MALWARE": cls.MALWARE,
-        }[string.upper()]
+        return getattr(cls, string.upper())
 
 
 class Permission(Enum):
