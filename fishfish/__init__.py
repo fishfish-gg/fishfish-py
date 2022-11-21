@@ -15,5 +15,12 @@ __version__ = "0.1.0"
 
 from .enums import Category, Permission
 from .models import URL, APIStatus, Domain, Token
-from .exceptions import FishFishException, Forbidden, Unauthorized, ServerError
+from .exceptions import (
+    FishFishException,
+    Forbidden,
+    Unauthorized,
+    ServerError,
+    AuthenticatedRoute,
+    ObjectDoesntExist,
+)
 from .fish_http_client import FishHTTPClient
