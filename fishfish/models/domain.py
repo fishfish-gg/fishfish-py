@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from dataclasses import dataclass
 from typing import Optional
 
@@ -9,7 +10,7 @@ from fishfish.enums import Category
 @dataclass
 class Domain:
     """A domain from fishfish
-    
+
     Attributes
     ----------
     name : str
@@ -25,19 +26,20 @@ class Domain:
     checked : int
         The last time the domain was checked
     """
+
     name: str
     description: str
     category: Category
-    added: int
-    checked: int
+    added: datetime.datetime
+    checked: datetime.datetime
     target: Optional[str]
 
     @classmethod
     def from_dict(cls, data) -> Domain:
         return cls(
             name=data["name"],
-            added=data["added"],
-            checked=data["checked"],
+            added=datetime.datetime.fromtimestamp(data["added"]),
+            checked=datetime.datetime.fromtimestamp(data["checked"]),
             target=data.get("target"),
             description=data["description"],
             category=Category.from_str(data["category"]),

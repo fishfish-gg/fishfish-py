@@ -15,6 +15,7 @@ class Category(Enum):
     MALWARE : str
         The category|domain is malware.
     """
+
     SAFE = "safe"
     PHISHING = "phishing"
     MALWARE = "malware"
@@ -34,5 +35,6 @@ class Permission(Enum):
     URLS : str
         The permission to POST/PATCH/DELETE urls.
     """
+
     DOMAINS = "domains"
     URLS = "urls"

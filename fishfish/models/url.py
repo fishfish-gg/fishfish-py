@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional
+import datetime
 from dataclasses import dataclass
+from typing import Optional
 
 from fishfish import Category
 
@@ -9,7 +10,7 @@ from fishfish import Category
 @dataclass
 class URL:
     """A URL from fishfish
-    
+
     Attributes
     ----------
     url : str
@@ -25,19 +26,20 @@ class URL:
     checked : int
         The last time the URL was checked.
     """
+
     url: str
     description: str
     category: Category
-    added: int
-    checked: int
+    added: datetime.datetime
+    checked: datetime.datetime
     target: Optional[str]
 
     @classmethod
     def from_dict(cls, data) -> URL:
         return cls(
             url=data["url"],
-            added=data["added"],
-            checked=data["checked"],
+            added=datetime.datetime.fromtimestamp(data["added"]),
+            checked=datetime.datetime.fromtimestamp(data["checked"]),
             target=data.get("target"),
             description=data["description"],
             category=Category.from_str(data["category"]),
