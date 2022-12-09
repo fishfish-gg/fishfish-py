@@ -1,19 +1,20 @@
-from typing import Optional, overload, List, Literal, Dict
+import datetime
+from typing import Dict, List, Literal, Optional, overload
 
 import httpx
 
 from fishfish import (
-    APIStatus,
-    Domain,
-    Category,
     URL,
-    Unauthorized,
+    APIStatus,
+    Category,
+    Domain,
+    FishFishException,
     Forbidden,
     ServerError,
-    FishFishException,
+    Token,
+    Unauthorized,
 )
-from fishfish.exceptions import ObjectDoesntExist, AuthenticatedRoute
-from fishfish.jwt import JWT
+from fishfish.exceptions import AuthenticatedRoute, ObjectDoesntExist
 
 
 class FishHTTPClient:
@@ -39,7 +40,7 @@ class FishHTTPClient:
             This is generated via the FishFish bot
         """
         self.__refresh_token: Optional[str] = token
-        self.__current_session_token: Optional[JWT] = None
+        self.__current_session_token: Optional[Token] = None
         self.__session: httpx.Client = httpx.Client(
             base_url="https://api.fishfish.gg/v1"
         )
@@ -70,7 +71,9 @@ class FishHTTPClient:
             raise Unauthorized("Your provided FishFish token is invalid.")
 
         data = r.json()
-        self.__current_session_token = JWT(data["token"], data["expires"])
+        token = data["token"]
+        expires = datetime.datetime.fromtimestamp(data["expires"])
+        self.__current_session_token = Token(token, expires)
         self.__session.headers = httpx.Headers(
             {"Authorization": self.__current_session_token.token}
         )
