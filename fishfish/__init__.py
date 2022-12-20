@@ -14,13 +14,18 @@ __version__ = "0.1.0"
 
 
 from .enums import Category, Permission
-from .models import URL, APIStatus, Domain, Token
 from .exceptions import (
+    AuthenticatedRoute,
     FishFishException,
     Forbidden,
-    Unauthorized,
-    ServerError,
-    AuthenticatedRoute,
     ObjectDoesntExist,
+    ServerError,
+    Unauthorized,
+)
+from .models import (  # keep this import above the http client import, it will raise an ImportError otherwise. black/isort will do that when ran so don't forget to undo - BeeMoe
+    URL,
+    APIStatus,
+    Domain,
+    Token,
 )
 from .fish_http_client import FishHTTPClient
