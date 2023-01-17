@@ -32,7 +32,7 @@ class Domain:
     category: Category
     added: datetime.datetime
     checked: datetime.datetime
-    target: Optional[str]
+    target: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data) -> Domain:
