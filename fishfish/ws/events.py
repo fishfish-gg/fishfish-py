@@ -2,14 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from fishfish.ws.models import (
-    WSDomainCreate,
-    WSDomainUpdate,
-    WSDomainDelete,
-    WSUrlCreate,
-    WSUrlUpdate,
-    WSUrlDelete,
-)
+from fishfish.ws.models import *
 
 
 class WebsocketEvents(str, Enum):
