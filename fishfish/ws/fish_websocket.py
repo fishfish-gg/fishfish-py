@@ -1,10 +1,14 @@
 import asyncio
+import datetime
 import json
 import logging
 import traceback
+from typing import Optional
 
+import httpx
 import websockets as websockets
 
+from fishfish import Token, Unauthorized
 from fishfish.ws import WebsocketEvents
 
 log = logging.getLogger(__name__)
@@ -12,7 +16,8 @@ log = logging.getLogger(__name__)
 
 class FishWebsocket:
     def __init__(self, api_key: str):
-        self._api_key: str = api_key
+        self.__refresh_token: Optional[str] = api_key
+        self.__current_session_token: Optional[Token] = None
         self._listeners: dict[WebsocketEvents, list] = {
             WebsocketEvents.URL_CREATE: [],
             WebsocketEvents.URL_UPDATE: [],
@@ -22,6 +27,25 @@ class FishWebsocket:
             WebsocketEvents.DOMAIN_DELETE: [],
         }
         self._error_handler = None
+
+    def _set_session_key(self):
+        if (
+            self.__current_session_token
+            and not self.__current_session_token.has_expired
+        ):
+            return
+
+        r = httpx.post(
+            "https://api.fishfish.gg/v1/users/@me/tokens",
+            headers={"Authorization": self.__refresh_token},
+        )
+        if r.status_code == 401:
+            raise Unauthorized("Your provided FishFish token is invalid.")
+
+        data = r.json()
+        token = data["token"]
+        expires = datetime.datetime.fromtimestamp(data["expires"])
+        self.__current_session_token = Token(token, expires)
 
     async def _process_event(self, data):
         try:
@@ -39,7 +63,11 @@ class FishWebsocket:
             asyncio.create_task(self._error_handler(e))
 
     async def _ws_loop(self):
-        async with websockets.connect("wss://api.fishfish.gg/v1/stream/") as websocket:
+        self._set_session_key()
+        async with websockets.connect(
+            "wss://api.fishfish.gg/v1/stream/",
+            extra_headers={"Authorization": self.__current_session_token.token},
+        ) as websocket:
             async for message in websocket:
                 asyncio.create_task(self._process_event(json.loads(message)))
 
