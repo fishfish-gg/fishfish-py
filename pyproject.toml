@@ -14,6 +14,7 @@ packages = [{include = "fishfish"}]
 [tool.poetry.dependencies]
 python = "^3.8"
 httpx = "^0.23.0"
+websockets = "^10.4"
 
 [tool.poetry.dev-dependencies]
 black = "^22.10.0"
